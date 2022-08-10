@@ -1,10 +1,18 @@
 import React from "react";
 import styled from "styled-components";
 import { Avatar, IconButton } from "@mui/material";
-import { Chat, DonutLarge, MoreVert, Search } from "@mui/icons-material";
-import { BasicMenu } from ".";
+import {
+  ArrowForwardIos,
+  Chat,
+  DonutLarge,
+  NotificationsOff,
+  Search,
+} from "@mui/icons-material";
+import { BasicMenu, Chats } from ".";
+import chats from "../data/chats";
 
 function Sidebar() {
+  console.log(chats.map((chat, index) => chat.latestMessage));
   return (
     <Container>
       <Header>
@@ -19,12 +27,37 @@ function Sidebar() {
           <BasicMenu />
         </IconsGroup>
       </Header>
+      <Notification>
+        <NotificationAvatar>
+          <NotificationsOff style={{ color: "#9DE1FE" }} />
+        </NotificationAvatar>
+        <NotificationText>
+          <div>Get Notified Of New Messages</div>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <a href="">
+              <u>Turn on desktop notifications</u>
+            </a>
+            <IconButton>
+              <ArrowForwardIos style={{ width: 10, height: 10 }} />
+            </IconButton>
+          </div>
+        </NotificationText>
+      </Notification>
       <SearchChat>
         <SearchBar>
           <Search />
           <SearchInput placeholder="Search or start new chat" />
         </SearchBar>
       </SearchChat>
+      {chats.map((chat, index) => (
+        <Chats
+          key={index}
+          name={chat.name}
+          photoURL={chat.photoURL}
+          latestMessage={chat.latestMessage}
+          timestamp={chat.timestamp}
+        />
+      ))}
     </Container>
   );
 }
@@ -78,4 +111,21 @@ const SearchInput = styled.input`
   width: 100%;
   outline: none;
   border: none;
+`;
+
+const Notification = styled.div`
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px;
+  background-color: #9de1fe;
+`;
+
+const NotificationAvatar = styled(Avatar)`
+  background-color: #fff;
+`;
+
+const NotificationText = styled.div`
+  display: flex;
+  flex-direction: column;
 `;
