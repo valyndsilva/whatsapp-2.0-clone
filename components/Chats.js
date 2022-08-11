@@ -1,21 +1,36 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import moment from "moment";
 import styled from "styled-components";
 import { Avatar } from "@mui/material";
 import { useRouter } from "next/router";
-function Chats({ photoURL, name, timestamp, latestMessage }) {
+import { SnippetFolderOutlined } from "@mui/icons-material";
+import getFriendData from "../utils/getFriendData";
+
+// function Chats({ photoURL, name, timestamp, latestMessage }) { // when using /data/chats.json
+function Chats({ id, users, timestamp = "", latestMessage = "Hi..." }) {
   const router = useRouter();
   const enterChat = () => {
-    router.push(`/chat/123`);
+    router.push(`/chat/${id}`);
   };
+  const [friend, setFriend] = useState({});
+  useEffect(() => {
+    if (users.length > 0) {
+      getFriendData(users).then((data) => {
+        setFriend(data);
+      });
+    }
+  }, []);
+
   return (
     <Container onClick={enterChat}>
-      <FrndAvatar src={photoURL} />
+      {/* <FrndAvatar src={photoURL} /> */}
+      <FrndAvatar src={friend.photoURL} />
       <ChatContainer>
-        <div style={{ gridArea: "name" }}>{name}</div>
-        <div style={{ gridArea: "time", fontSize: "14px" }}>
+        {/* <div style={{ gridArea: "name" }}>{name}</div> */}
+        <div style={{ gridArea: "name" }}>{friend.displayName}</div>
+        {/* <div style={{ gridArea: "time", fontSize: "14px" }}>
           {moment(timestamp.seconds * 1000).format("LT")}
-        </div>
+        </div> */}
         <div style={{ gridArea: "latest_message" }}>{latestMessage}</div>
       </ChatContainer>
     </Container>

@@ -3,7 +3,8 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { MoreVert } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
-
+import { signOut } from "firebase/auth";
+import { auth } from "../firebaseConfig";
 export default function BasicMenu() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -36,13 +37,13 @@ export default function BasicMenu() {
           horizontal: "right",
         }}
       >
-        <MenuItem >New Group</MenuItem>
-        <MenuItem >Create a room</MenuItem>
-        <MenuItem >Profile</MenuItem>
-        <MenuItem >Archived</MenuItem>
-        <MenuItem >Starred</MenuItem>
-        <MenuItem >Settings</MenuItem>
-        <MenuItem onClick={handleClose}>Logout</MenuItem>
+        <MenuItem>New Group</MenuItem>
+        <MenuItem>Create a room</MenuItem>
+        <MenuItem>Profile</MenuItem>
+        <MenuItem>Archived</MenuItem>
+        <MenuItem>Starred</MenuItem>
+        <MenuItem>Settings</MenuItem>
+        <MenuItem onClick={() => signOut(auth)}>Logout</MenuItem>
       </Menu>
     </>
   );

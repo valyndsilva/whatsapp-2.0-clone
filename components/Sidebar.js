@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { Avatar, IconButton } from "@mui/material";
 import {
@@ -10,13 +10,87 @@ import {
 } from "@mui/icons-material";
 import { BasicMenu, Chats } from ".";
 import chats from "../data/chats";
+import {
+  collection,
+  getDocs,
+  onSnapshot,
+  query,
+  where,
+} from "firebase/firestore";
+import { db } from "../firebaseConfig";
+import Friend from "./Friend";
+import { useAuth } from "../context/AuthContext";
 
 function Sidebar() {
-  console.log(chats.map((chat, index) => chat.latestMessage));
+  const { currentUser } = useAuth();
+  const [friends, setFriends] = useState([]);
+  const [chats, setChats] = useState([]);
+  const inputAreaRef = useRef(null);
+  const [searchFriends, setSearchFriends] = useState(false);
+
+  //Fetch friends list
+  useEffect(() => {
+    async function fetchFriends() {
+      // Create a collection of users
+      const userRef = collection(db, "users");
+      // Find email which are not the currentUser email since we don't want to show the currentUser email in the friends list
+      const q = query(userRef, where("email", "!=", currentUser?.email));
+      // Get all the users that are not the currentUser email
+      const querySnapshot = await getDocs(q);
+      console.log("querySnapshot", querySnapshot);
+      setFriends(
+        querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+      );
+    }
+    fetchFriends();
+  }, []);
+
+  //Fetch chats
+  useEffect(() => {
+    async function fetchChats() {
+      // Create a collection of chats
+      const chatsRef = collection(db, "chats");
+      // Find users which have the currentUser uid since there might be multiple chats that belong to the currentUser uid
+      const q = query(
+        chatsRef,
+        where("users", "array-contains", currentUser.uid)
+      );
+      // Get all chats that belong to the currentUser uid
+      const querySnapshot = await getDocs(q);
+      console.log("querySnapshot", querySnapshot);
+
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        setChats(
+          querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+        );
+      });
+      return unsubscribe;
+    }
+    fetchChats();
+  }, []);
+
+  useEffect(() => {
+    const checkIfClickedOutside = (e) => {
+      // If the user clicks outside of the input element, do something
+      if (inputAreaRef.current && !inputAreaRef.current.contains(e.target)) {
+        console.log("Clicked outside");
+        setTimeout(() => {
+          setSearchFriends(false);
+        }, 3000);
+      } else {
+        setSearchFriends(true);
+      }
+    };
+    document.addEventListener("mousedown", checkIfClickedOutside);
+    return () => {
+      // Cleanup the event listener
+      document.removeEventListener("mousedown", checkIfClickedOutside);
+    };
+  }, []);
   return (
     <Container>
       <Header>
-        <UserAvatar src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" />
+        <UserAvatar src={currentUser.photoURL} />
         <IconsGroup>
           <IconButton>
             <DonutLarge />
@@ -46,10 +120,14 @@ function Sidebar() {
       <SearchChat>
         <SearchBar>
           <Search />
-          <SearchInput placeholder="Search or start new chat" />
+          <SearchInput
+            ref={inputAreaRef}
+            placeholder="Search or start new chat"
+          />
         </SearchBar>
       </SearchChat>
-      {chats.map((chat, index) => (
+      {/* Get chats from /data/chat.json */}
+      {/* {chats.map((chat, index) => (
         <Chats
           key={index}
           name={chat.name}
@@ -57,7 +135,43 @@ function Sidebar() {
           latestMessage={chat.latestMessage}
           timestamp={chat.timestamp}
         />
-      ))}
+      ))} */}
+      {/* Get chats from firebase */}
+      {/* {friends.map((friend, index) => (
+        <Friend
+          key={index}
+          displayName={friend.displayName}
+          photoURL={friend.photoURL}
+          id={friend.id}
+        />
+      ))} */}
+
+      {searchFriends ? (
+        <>
+          {/* Display all the users except the currentUser */}
+          {friends.map((friend) => (
+            <Friend
+              key={friend.id}
+              id={friend.id}
+              displayName={friend.displayName}
+              photoURL={friend.photoURL}
+            />
+          ))}
+        </>
+      ) : (
+        <>
+          {/* Display chat items for the chats that belong to the currentUser */}
+          {chats.map((chat) => (
+            <Chats
+              key={chat.id}
+              id={chat.id}
+              users={chat.users}
+              latestMessage={chat.latestMessage}
+              timestamp={chat.timestamp}
+            />
+          ))}
+        </>
+      )}
     </Container>
   );
 }

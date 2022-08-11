@@ -29,7 +29,7 @@ const Container = styled.div`
   margin-top: 20px;
   margin-bottom: 20px;
   box-shadow: 0 0 1rem 0.05rem rgba(0, 0, 0, 0.2);
-  height: 100vh;
+  height: 90vh;
 
   @media (max-width: 640px) {
     width: 100%;
