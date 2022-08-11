@@ -19,3 +19,4 @@ npm install @mui/icons-material
 npm install moment
 npm install firebase
 npm install react-loading
+npm install fuse.js

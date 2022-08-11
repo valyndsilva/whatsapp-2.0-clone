@@ -33,6 +33,13 @@ function ChatContent({ chat, chat_id, messagesProps }) {
   const [messages, setMessages] = useState([]);
   const messagesEndRef = useRef(null);
 
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
   useEffect(() => {
     const messagesParse = JSON.parse(messagesProps);
     // console.log({messagesParse});
@@ -115,6 +122,7 @@ function ChatContent({ chat, chat_id, messagesProps }) {
             timestamp={message.timestamp}
           />
         ))}
+        <EndOfMessage ref={messagesEndRef} style={{ marginBottom: 100 }} />
       </MessagesContainer>
       <InputContainer>
         <IconButton>
@@ -201,3 +209,4 @@ const MessagesContainer = styled.div`
   background-repeat: repeat;
   background-attachment: fixed;
 `;
+const EndOfMessage = styled.div``;

@@ -20,6 +20,7 @@ import {
 import { db } from "../firebaseConfig";
 import Friend from "./Friend";
 import { useAuth } from "../context/AuthContext";
+import Fuse from "fuse.js";
 
 function Sidebar() {
   const { currentUser } = useAuth();
@@ -27,7 +28,14 @@ function Sidebar() {
   const [chats, setChats] = useState([]);
   const inputAreaRef = useRef(null);
   const [searchFriends, setSearchFriends] = useState(false);
+  const [inputSearch, setInputSearch] = useState("");
 
+  // Search friends using search input
+  const fuse = new Fuse(friends, {
+    keys: ["diplayName", "email"],
+  });
+  const friends_result = fuse.search(inputSearch);
+  console.log(friends_result);
   //Fetch friends list
   useEffect(() => {
     async function fetchFriends() {
@@ -123,6 +131,8 @@ function Sidebar() {
           <SearchInput
             ref={inputAreaRef}
             placeholder="Search or start new chat"
+            value={inputSearch}
+            onChange={(e) => setInputSearch(e.target.value)}
           />
         </SearchBar>
       </SearchChat>
@@ -149,12 +159,12 @@ function Sidebar() {
       {searchFriends ? (
         <>
           {/* Display all the users except the currentUser */}
-          {friends.map((friend) => (
+          {friends_result.map(({ item }) => (
             <Friend
-              key={friend.id}
-              id={friend.id}
-              displayName={friend.displayName}
-              photoURL={friend.photoURL}
+              key={item.id}
+              id={item.id}
+              displayName={item.displayName}
+              photoURL={item.photoURL}
             />
           ))}
         </>

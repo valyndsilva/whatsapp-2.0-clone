@@ -56,7 +56,7 @@ const MessageTailLeft = styled.span`
     border-right-color: #fff;
     border-left: 0;
     border-top: 0;
-    margin-top: 0px;
+    margin-top: -54px;
     margin-left: -12px;
   }
 `;
@@ -69,7 +69,7 @@ const MessageTailRight = styled.span`
     border-left-color: #dcf8c6;
     border-right: 0;
     border-top: 0;
-    margin-top: -0px;
+    margin-top: -54px;
     margin-right: -12px;
   }
 `;
