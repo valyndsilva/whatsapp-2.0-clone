@@ -7,7 +7,7 @@ import { SnippetFolderOutlined } from "@mui/icons-material";
 import getFriendData from "../utils/getFriendData";
 
 // function Chats({ photoURL, name, timestamp, latestMessage }) { // when using /data/chats.json
-function Chats({ id, users, timestamp = "", latestMessage = "Hi..." }) {
+function Chats({ id, users, timestamp = "", latestMessage = "" }) {
   const router = useRouter();
   const enterChat = () => {
     router.push(`/chat/${id}`);
@@ -31,6 +31,9 @@ function Chats({ id, users, timestamp = "", latestMessage = "Hi..." }) {
         {/* <div style={{ gridArea: "time", fontSize: "14px" }}>
           {moment(timestamp.seconds * 1000).format("LT")}
         </div> */}
+        <div style={{ gridArea: "time", fontSize: "14px" }}>
+          {timestamp ? moment(timestamp?.toDate()).format("LT") : ""}
+        </div>
         <div style={{ gridArea: "latest_message" }}>{latestMessage}</div>
       </ChatContainer>
     </Container>

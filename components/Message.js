@@ -1,9 +1,11 @@
 import moment from "moment";
 import React from "react";
 import styled from "styled-components";
+import { useAuth } from "../context/AuthContext";
 
 function Message({ user, message, timestamp }) {
-  const loginMail = "valyndsilva@gmail.com";
+  const { currentUser } = useAuth();
+  const loginMail = currentUser.email;
   const MessageType = user === loginMail ? MyMessage : FrndMessage;
 
   return (
