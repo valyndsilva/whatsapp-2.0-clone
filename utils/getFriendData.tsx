@@ -3,10 +3,10 @@ import { getAuth } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 
-const getFriendData = async (users) => {
+const getFriendData = async (users: any[]) => {
   const { currentUser } = getAuth();
   // Get all the users that are not the currentUser uid
-  const friendId = users?.filter((user) => user !== currentUser.uid);
+  const friendId = users?.filter((user: string) => user !== currentUser.uid);
   console.log("friendId: ", friendId);
   // Get document by pointing to users collection which has the matching friendId
   const docRef = doc(db, "users", friendId[0]);

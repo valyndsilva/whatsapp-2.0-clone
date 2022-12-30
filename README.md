@@ -1,22 +1,24 @@
-npx create-next-app whatsapp-2.0-clone
-cd whatsapp-2.0-clone
-npm install styled-components
-npm install --save-dev babel-plugin-styled-components
-Note: babel-plugin-styled-components fixes the sttling issues with styled-components
+# WhatsApp Clone App ⚡
 
-Create .babelrc in root folder:
-{
-"presets": ["next/babel"],
-"plugins": ["babel-plugin-styled-components"]
-}
+## Tech Stack Used:
 
-delete .next folder from root and run:
-npm run dev
+- [React](https://reactjs.org/)
+- [Next.js](https://nextjs.org/)
+- [Typescript](https://www.typescriptlang.org/)
+- [Tailwind CSS](https://tailwindcss.com/docs/guides/nextjs)
+- [Material UI](https://mui.com/)
+- [Fuse JS](https://fusejs.io/)
+- [Moment](https://www.npmjs.com/package/moment)
+- [Firebase Authentication](https://firebase.google.com/products/auth)
+- [Firestore](https://firebase.google.com/docs/firestore)
+- [Vercel](https://vercel.com/)
 
-npm install @mui/material @emotion/react @emotion/styled
-npm install @mui/material @mui/styled-engine-sc styled-components
-npm install @mui/icons-material
-npm install moment
-npm install firebase
-npm install react-loading
-npm install fuse.js
+## Demo
+
+Checkout the [demo here](https://whatsapp-clone-valyndsilva.vercel.app/)
+
+### Sign In with Google
+
+![](/public/gifs/1.signin-google.gif)
+
+[Expand](/public/demos/1.signin-google.mp4)
