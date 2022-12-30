@@ -19,7 +19,6 @@ const getFriendData = async (users) => {
     console.log("Document data: No such document!");
     return;
   }
-  return <div>getFriendData</div>;
 };
 
 export default getFriendData;

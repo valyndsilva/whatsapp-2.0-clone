@@ -8,7 +8,7 @@ function Friend({ photoURL, displayName, id }) {
   const { currentUser } = useAuth();
 
   // Create a new chat
-  const createChat = async (id) => {
+  const createChat = async (id: any) => {
     // Create a collection of chats
     const chatsRef = collection(db, "chats");
     // Find users which have the currentUser uid since there might be multiple chats that belong to the currentUser uid
@@ -21,11 +21,11 @@ function Friend({ photoURL, displayName, id }) {
 
     // Check if the currentUser chat already exists in chats collection with a given friend_id
     // (!! condition returns true or false)
-    const chatAlreadyExits = (friend_id) => {
+    const chatAlreadyExits = (friend_id: any) => {
       console.log("Chat already exists");
-      !!querySnapshot?.docs.find(
+      return !!querySnapshot?.docs.find(
         (chat) =>
-          chat.data().users.find((user) => user === friend_id)?.length > 0
+          chat.data().users.find((user: any) => user === friend_id)?.length > 0
       );
     };
 
@@ -39,42 +39,16 @@ function Friend({ photoURL, displayName, id }) {
     }
   };
   return (
-    <Container onClick={() => createChat(id)}>
-      <FrndAvatar src={photoURL} />
-      <FriendContainer>
+    <div
+      className="flex items-center cursor-pointer min-[67px]  pl-4 break-words hover:bg-[#f5f5f5]"
+      onClick={() => createChat(id)}
+    >
+      <Avatar className="m-[5px] mr-4" src={photoURL} />
+      <div>
         <div style={{ gridArea: "name" }}>{displayName}</div>
-      </FriendContainer>
-    </Container>
+      </div>
+    </div>
   );
 }
 
 export default Friend;
-
-const Container = styled.div`
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  min-height: 67px;
-  padding-left: 15px;
-  word-break: break-word;
-  :hover {
-    background-color: #f5f5f5;
-  }
-`;
-
-const FrndAvatar = styled(Avatar)`
-  margin: 5px;
-  margin-right: 15px;
-`;
-
-const FriendContainer = styled.div`
-  display: grid;
-  padding: 10px;
-  width: 100%;
-  grid-template-columns: repeat(3, 1fr);
-  border-bottom: 1px solid #ededed;
-  gap: 10px;
-  grid-template-areas:
-    "name name time"
-    "latest_message latest_message.";
-`;

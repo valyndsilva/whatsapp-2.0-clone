@@ -5,10 +5,13 @@ import { MoreVert } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebaseConfig";
+
 export default function BasicMenu() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
-  const handleClick = (event) => {
+  const handleClick = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {

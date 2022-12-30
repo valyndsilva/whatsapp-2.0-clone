@@ -27,7 +27,7 @@ import getFriendData from "../utils/getFriendData";
 
 function ChatContent({ chat, chat_id, messagesProps }) {
   const { currentUser } = useAuth();
-  const [friend, setFriend] = useState({});
+  const [friend, setFriend] = useState<FriendData>();
   const chatParse = JSON.parse(chat);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
@@ -50,8 +50,11 @@ function ChatContent({ chat, chat_id, messagesProps }) {
     if (chatParse.users?.length > 0) {
       console.log("Chat has users: has chatParse");
       console.log("chatParse.users", chatParse.users);
-      getFriendData(chatParse.users).then((data) => {
+      getFriendData(chatParse.users).then((data: FriendData) => {
+        console.log("getFriendData:", data);
+
         setFriend(data);
+        console.log(friend);
       });
     } else {
       console.log("No chat users: No chatParse");
@@ -99,21 +102,23 @@ function ChatContent({ chat, chat_id, messagesProps }) {
   }, [chat_id]);
 
   return (
-    <Container>
-      <Header>
-        <Avatar src={friend.photoURL} />
-        <HeaderInfo>
-          <h3>{friend.displayName}</h3>
-          <div>Last Active: {moment(friend.lastSeen?.toDate()).fromNow()}</div>
-        </HeaderInfo>
+    <div className="flex flex-col h-full">
+      <div className="sticky bg-white z-50 top-0 flex p-3 h-20 items-center border-b border-b-white">
+        <Avatar src={friend?.photoURL} />
+        <div className="justify-center ml-4 flex-1">
+          <h3 className="mt-0 mb-[3px]">{friend?.displayName}</h3>
+          <div className="text-sm text-gray-500">
+            Last Active: {moment(friend?.lastSeen?.toDate()).fromNow()}
+          </div>
+        </div>
         <IconButton>
           <Search />
         </IconButton>
         <IconButton>
           <MoreVert />
         </IconButton>
-      </Header>
-      <MessagesContainer>
+      </div>
+      <div className="p-5 bg-[#e5ded8] flex-1 bg-repeat bg-fixed bg-[url('/assets/whatsapp-bg-color.png')]">
         {messages.map((message, index) => (
           <Message
             key={message.id}
@@ -122,16 +127,17 @@ function ChatContent({ chat, chat_id, messagesProps }) {
             timestamp={message.timestamp}
           />
         ))}
-        <EndOfMessage ref={messagesEndRef} style={{ marginBottom: 100 }} />
-      </MessagesContainer>
-      <InputContainer>
+        <div ref={messagesEndRef} style={{ marginBottom: 100 }} />
+      </div>
+      <form className="flex items-center p-3 sticky bottom-0 bg-[#f0f0f0] z-50">
         <IconButton>
           <InsertEmoticon />
         </IconButton>
         <IconButton>
           <AttachFile />
         </IconButton>
-        <Input
+        <input
+          className="flex-1 outline-none border-none rounded-full p-5 mx-4"
           placeholder="Type a message"
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -142,71 +148,9 @@ function ChatContent({ chat, chat_id, messagesProps }) {
         <IconButton>
           <Mic />
         </IconButton>
-      </InputContainer>
-    </Container>
+      </form>
+    </div>
   );
 }
 
 export default ChatContent;
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-`;
-
-const Header = styled.div`
-  position: sticky;
-  background-color: #fff;
-  z-index: 100;
-  top: 0;
-  display: flex;
-  padding: 11px;
-  height: 80px;
-  align-items: center;
-  border-bottom: 1px solid whitesmoke;
-`;
-
-const HeaderInfo = styled.div`
-  justify-content: center;
-  margin-left: 15px;
-  flex: 1;
-  > h3 {
-    margin-top: 0;
-    margin-bottom: 3px;
-  }
-  > div {
-    font-size: 14px;
-    color: gray;
-  }
-`;
-
-const InputContainer = styled.form`
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  position: sticky;
-  bottom: 0;
-  background-color: #f0f0f0;
-  z-index: 100;
-`;
-
-const Input = styled.input`
-  flex: 1;
-  outline: 0;
-  border: none;
-  border-radius: 30px;
-  padding: 20px;
-  margin-left: 15px;
-  margin-right: 15px;
-`;
-
-const MessagesContainer = styled.div`
-  padding: 20px;
-  background-color: #e5ded8;
-  flex: 1;
-  background-image: url("/assets/whatsapp-bg-color.png");
-  background-repeat: repeat;
-  background-attachment: fixed;
-`;
-const EndOfMessage = styled.div``;

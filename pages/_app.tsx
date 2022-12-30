@@ -1,5 +1,5 @@
+import "../styles/globals.css";
 import { Layout } from "../components";
-import Loading from "../components/Loading";
 import { AuthProvider } from "../context/AuthContext";
 import "../styles/globals.css";
 import Login from "./login";

@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import styled from "styled-components";
 import { Avatar, IconButton } from "@mui/material";
 import {
   ArrowForwardIos,
@@ -9,7 +8,7 @@ import {
   Search,
 } from "@mui/icons-material";
 import { BasicMenu, Chats } from ".";
-import chats from "../data/chats";
+// import chats from "../data/chats";
 import {
   collection,
   getDocs,
@@ -96,10 +95,13 @@ function Sidebar() {
     };
   }, []);
   return (
-    <Container>
-      <Header>
-        <UserAvatar src={currentUser.photoURL} />
-        <IconsGroup>
+    <div className="bg-white min-w-[320px] max-w-[450px] h-full">
+      <div className="flex sticky top-0 bg-white justify-between items-center p-4 h-[80px] border-b border-b-white w-full">
+        <Avatar
+          className="cursor-pointer hover:opacity:0.8"
+          src={currentUser.photoURL}
+        />
+        <div>
           <IconButton>
             <DonutLarge />
           </IconButton>
@@ -107,13 +109,13 @@ function Sidebar() {
             <Chat />
           </IconButton>
           <BasicMenu />
-        </IconsGroup>
-      </Header>
-      <Notification>
-        <NotificationAvatar>
+        </div>
+      </div>
+      <div className="flex justify-around items-center p-2 bg-[#9de1fe]">
+        <Avatar className="bg-white">
           <NotificationsOff style={{ color: "#9DE1FE" }} />
-        </NotificationAvatar>
-        <NotificationText>
+        </Avatar>
+        <div className="flex flex-col">
           <div>Get Notified Of New Messages</div>
           <div style={{ display: "flex", alignItems: "center" }}>
             <a href="">
@@ -123,19 +125,20 @@ function Sidebar() {
               <ArrowForwardIos style={{ width: 10, height: 10 }} />
             </IconButton>
           </div>
-        </NotificationText>
-      </Notification>
-      <SearchChat>
-        <SearchBar>
+        </div>
+      </div>
+      <div className="bg-[#f6f6f6] border-b border-b-black/10 p-5">
+        <div className="flex p-[5px] rounded-md border-b border-b-[#ededed] bg-white">
           <Search />
-          <SearchInput
+          <input
+            className="w-full outline-none border-none"
             ref={inputAreaRef}
             placeholder="Search or start new chat"
             value={inputSearch}
             onChange={(e) => setInputSearch(e.target.value)}
           />
-        </SearchBar>
-      </SearchChat>
+        </div>
+      </div>
       {/* Get chats from /data/chat.json */}
       {/* {chats.map((chat, index) => (
         <Chats
@@ -146,6 +149,7 @@ function Sidebar() {
           timestamp={chat.timestamp}
         />
       ))} */}
+
       {/* Get chats from firebase */}
       {/* {friends.map((friend, index) => (
         <Friend
@@ -172,84 +176,12 @@ function Sidebar() {
         <>
           {/* Display chat items for the chats that belong to the currentUser */}
           {chats.map((chat) => (
-            <Chats
-              key={chat.id}
-              id={chat.id}
-              users={chat.users}
-              latestMessage={chat.latestMessage}
-              timestamp={chat.timestamp}
-            />
+            <Chats key={chat.id} chat={chat} />
           ))}
         </>
       )}
-    </Container>
+    </div>
   );
 }
 
 export default Sidebar;
-
-const Container = styled.div`
-  background-color: #fff;
-  min-width: 320px;
-  max-width: 450px;
-  height: 100%;
-`;
-
-const Header = styled.div`
-  display: flex;
-  position: sticky;
-  top: 0;
-  background-color: #fff;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px;
-  height: 80px;
-  border-bottom: 1px solid whitesmoke;
-  width: 100%;
-`;
-
-const UserAvatar = styled(Avatar)`
-  cursor: pointer;
-  :hover {
-    opacity: 0.8;
-  }
-`;
-
-const IconsGroup = styled.div``;
-
-const SearchChat = styled.div`
-  background-color: #f6f6f6;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  padding: 20px;
-`;
-
-const SearchBar = styled.div`
-  display: flex;
-  padding: 5px;
-  border-radius: 10px;
-  border-bottom: 1px solid #ededed;
-  background-color: #fff;
-`;
-
-const SearchInput = styled.input`
-  width: 100%;
-  outline: none;
-  border: none;
-`;
-
-const Notification = styled.div`
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: 10px;
-  background-color: #9de1fe;
-`;
-
-const NotificationAvatar = styled(Avatar)`
-  background-color: #fff;
-`;
-
-const NotificationText = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
