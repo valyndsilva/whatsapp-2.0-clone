@@ -46,3 +46,17 @@ a {
     background: black;
   }
 }
+
+.scrollContainer {
+  @apply [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'];
+}
+
+.userBubble {
+  @apply before:content-[''] before:absolute before:w-[15px] before:h-[15px] before:left-[-10px] before:bottom-[0px] before:rounded-3xl before:bg-white  before:z-10 after:content-[''] after:absolute after:w-[15px] after:h-[15px] after:left-[-15px] after:bottom-[4px] after:rounded-3xl after:bg-[#E5DCD4] after:z-10;
+}
+
+.friendBubble {
+  @apply before:content-[''] before:absolute before:w-[15px] before:h-[15px] before:right-[-10px] before:bottom-[0px] before:rounded-3xl before:bg-[#dcf8c6] before:z-10 after:content-[''] after:absolute after:w-[15px] after:h-[15px] after:right-[-15px] after:bottom-[4px] after:rounded-3xl after:bg-[#E5DCD4] after:z-10;
+}
+@layer components {
+}

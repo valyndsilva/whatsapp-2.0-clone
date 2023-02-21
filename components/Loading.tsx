@@ -11,6 +11,13 @@ function Loading({ type, color }) {
       justifyContent="center"
       style={{ minHeight: "100vh", backgroundColor: "whitesmoke" }}
     >
+      <img
+        src="/assets/whatsapp-home.png"
+        alt="Whatsapp Logo"
+        height={250}
+        width={250}
+        className="object-contain"
+      />
       <ReactLoading type={type} color={color} height={"20%"} width={"20%"} />
     </Grid>
   );

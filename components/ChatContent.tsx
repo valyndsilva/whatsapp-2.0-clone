@@ -14,16 +14,19 @@ import {
   addDoc,
   collection,
   doc,
+  getDocs,
   onSnapshot,
   orderBy,
   query,
   serverTimestamp,
   setDoc,
+  where,
 } from "firebase/firestore";
 import moment from "moment";
 // import messages from "../data/messages";
 import Message from "./Message";
 import getFriendData from "../utils/getFriendData";
+import getRecipientEmail from "../utils/getRecipientEmail";
 
 function ChatContent({ chat, chat_id, messagesProps }) {
   const { currentUser } = useAuth();
@@ -46,6 +49,7 @@ function ChatContent({ chat, chat_id, messagesProps }) {
     setMessages(messagesParse);
   }, []);
 
+  // Fetch Friend Data
   useEffect(() => {
     if (chatParse.users?.length > 0) {
       console.log("Chat has users: has chatParse");
@@ -101,14 +105,47 @@ function ChatContent({ chat, chat_id, messagesProps }) {
     });
   }, [chat_id]);
 
+  const [recipientSnapshot, setRecipientSnapshot] = useState([]);
+  const user = currentUser;
+  const users= chatParse.users;
+  // Create a reference to the chats collection
+  const recipientRef = collection(db, "users");
+  // console.log({ recipientRef });
+
+  // Create a query against the collection.
+  const recipientQuery = query(
+    recipientRef,
+    where("email", "==", getRecipientEmail(users, user))
+  );
+  // console.log({ recipientQuery });
+
+  useEffect(() => {
+    const getRecipientSnapshot = async () => {
+      const queryRecipientSnapshot = await getDocs(recipientQuery);
+      // console.log({ queryRecipientSnapshot });
+      setRecipientSnapshot(queryRecipientSnapshot);
+    };
+    getRecipientSnapshot();
+  }, []);
+  const recipient = recipientSnapshot?.docs?.[0]?.data();
+  console.log({ recipient });
+  const recipientPhotoURL = recipientSnapshot?.docs?.[0]?.data()?.photoURL;
+  // console.log(recipient);
+  const recipientEmail = getRecipientEmail(users, user);
+  // console.log({ recipientEmail });
+
   return (
     <div className="flex flex-col h-full">
       <div className="sticky bg-white z-50 top-0 flex p-3 h-20 items-center border-b border-b-white">
-        <Avatar src={friend?.photoURL} />
+        <Avatar src={recipient?.photoURL} />
+
         <div className="justify-center ml-4 flex-1">
-          <h3 className="mt-0 mb-[3px]">{friend?.displayName}</h3>
+          <h3 className="mt-0 mb-[3px]">
+            {recipient?.displayName}{" "}
+            <span className="text-gray-400 text-sm">({recipient?.email})</span>
+          </h3>
           <div className="text-sm text-gray-500">
-            Last Active: {moment(friend?.lastSeen?.toDate()).fromNow()}
+            Last Active: {moment(recipient?.lastSeen?.toDate()).fromNow()}
           </div>
         </div>
         <IconButton>

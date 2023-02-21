@@ -1,16 +1,22 @@
-import { collection, doc, getDoc, getDocs, orderBy, query } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  orderBy,
+  query,
+} from "firebase/firestore";
 import React from "react";
-import styled from "styled-components";
 import { ChatContent } from "../../components";
 import { db } from "../../firebaseConfig";
 
 function ChatBox({ chat, id, messages }) {
   return (
-    <Container>
-      <ChatContainer>
+    <div className="flex bg-[#f8fafc] w-full">
+      <div className="flex-1 overflow-scroll max-h-[100vh] scrollContainer">
         <ChatContent chat={chat} chat_id={id} messagesProps={messages} />
-      </ChatContainer>
-    </Container>
+      </div>
+    </div>
   );
 }
 
@@ -41,20 +47,3 @@ export async function getServerSideProps(context) {
     },
   };
 }
-const Container = styled.div`
-  display: flex;
-  background-color: #f8fafc;
-  width: 100%;
-`;
-
-const ChatContainer = styled.div`
-  flex: 1;
-  overflow: scroll;
-  max-height: 100vh;
-
-  ::-webkit-scrollbar {
-    display: none;
-  }
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
-`;

@@ -40,6 +40,7 @@ export default function BasicMenu() {
           horizontal: "right",
         }}
       >
+        <MenuItem>New Chat</MenuItem>
         <MenuItem>New Group</MenuItem>
         <MenuItem>Create a room</MenuItem>
         <MenuItem>Profile</MenuItem>

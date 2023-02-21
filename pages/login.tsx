@@ -13,8 +13,8 @@ function login() {
     signInWithPopup(auth, provider);
   };
   return (
-    <Container>
-      <Login>
+    <div className="grid place-items-center h-[100vh] w-[100vw] bg-[#009688] ">
+      <div className="p-8 flex gap-5 bg-white rounded-xl">
         <Image
           alt="Whatsapp Logo"
           src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
@@ -28,25 +28,9 @@ function login() {
         >
           Sign in with Google
         </Button>
-      </Login>
-    </Container>
+      </div>
+    </div>
   );
 }
 
 export default login;
-
-const Container = styled.div`
-  display: grid;
-  place-items: center;
-  height: 100vh;
-  background-color: rgba(0, 150, 136);
-  width: 100vw;
-`;
-
-const Login = styled.div`
-  padding: 30px;
-  display: flex;
-  gap: 20px;
-  background-color: #fff;
-  border-radius: 15px;
-`;

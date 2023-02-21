@@ -10,10 +10,10 @@ function Message({ user, message, timestamp }) {
   return (
     <div className="flex">
       <div
-        className={`p-4 pb-7 text-right bg-white mb-2 relative min-w-[80px] ${
+        className={`p-4 pb-7 text-right bg-white mb-2 relative min-w-[80px]  ${
           user === loginMail
-            ? "ml-auto bg-[#dcf8c6] rounded-b-lg rounded-l-lg after:contents"
-            : "bg-white text-left rounded-b-lg rounded-r-lg"
+            ? "ml-auto bg-[#dcf8c6] rounded-lg friendBubble"
+            : "bg-white text-left rounded-lg userBubble"
         }`}
       >
         {message}

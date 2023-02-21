@@ -10,6 +10,7 @@ import {
 import { BasicMenu, Chats } from ".";
 // import chats from "../data/chats";
 import {
+  addDoc,
   collection,
   getDocs,
   onSnapshot,
@@ -20,93 +21,161 @@ import { db } from "../firebaseConfig";
 import Friend from "./Friend";
 import { useAuth } from "../context/AuthContext";
 import Fuse from "fuse.js";
+import * as EmailValidator from "email-validator";
+import { User } from "firebase/auth";
 
 function Sidebar() {
   const { currentUser } = useAuth();
+  // console.log(currentUser);
   const [friends, setFriends] = useState([]);
-  const [chats, setChats] = useState([]);
+  const [chats, setChats] = useState<any[]>([]);
   const inputAreaRef = useRef(null);
   const [searchFriends, setSearchFriends] = useState(false);
   const [inputSearch, setInputSearch] = useState("");
 
-  // Search friends using search input
-  const fuse = new Fuse(friends, {
-    keys: ["diplayName", "email"],
-  });
-  const friends_result = fuse.search(inputSearch);
-  console.log(friends_result);
   //Fetch friends list
+  async function fetchFriends() {
+    // Create a reference to the users collection
+    const userRef = collection(db, "users");
+    console.log({ userRef });
+    // Find email which are not the currentUser email since we don't want to show the currentUser email in the friends list
+    const q = query(userRef, where("email", "!=", currentUser?.email));
+    // Get all the users that are not the currentUser email
+    const querySnapshot = await getDocs(q);
+    console.log("querySnapshot", querySnapshot);
+    setFriends(
+      querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+    );
+  }
+
   useEffect(() => {
-    async function fetchFriends() {
-      // Create a collection of users
-      const userRef = collection(db, "users");
-      // Find email which are not the currentUser email since we don't want to show the currentUser email in the friends list
-      const q = query(userRef, where("email", "!=", currentUser?.email));
-      // Get all the users that are not the currentUser email
-      const querySnapshot = await getDocs(q);
-      console.log("querySnapshot", querySnapshot);
-      setFriends(
-        querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
-      );
-    }
     fetchFriends();
   }, []);
 
-  //Fetch chats
-  useEffect(() => {
-    async function fetchChats() {
-      // Create a collection of chats
-      const chatsRef = collection(db, "chats");
-      // Find users which have the currentUser uid since there might be multiple chats that belong to the currentUser uid
-      const q = query(
-        chatsRef,
-        where("users", "array-contains", currentUser.uid)
-      );
-      // Get all chats that belong to the currentUser uid
-      const querySnapshot = await getDocs(q);
-      console.log("querySnapshot", querySnapshot);
+  // //Fetch chats
+  // async function fetchChats() {
+  //   // Create a reference to the chats collection
+  //   const chatsRef = collection(db, "chats");
+  //   console.log({ chatsRef });
+  //   // Find users which have the currentUser uid since there might be multiple chats that belong to the currentUser uid
+  //   const userChatQuery = query(
+  //     chatsRef,
+  //     // where("users", "array-contains", currentUser.uid)
+  //     where("users", "array-contains", currentUser.uid)
+  //   );
+  //   console.log({ userChatQuery });
+  //   // Get all chats that belong to the currentUser uid
+  //   const querySnapshot = await getDocs(userChatQuery);
+  //   console.log("querySnapshot", querySnapshot);
 
-      const unsubscribe = onSnapshot(q, (querySnapshot) => {
-        setChats(
-          querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
-        );
-      });
-      return unsubscribe;
-    }
+  //   const unsubscribe = onSnapshot(userChatQuery, (querySnapshot) => {
+  //     setChats(
+  //       querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+  //     );
+  //   });
+  //   return unsubscribe;
+  // }
+
+  //Fetch chats
+  async function fetchChats() {
+    // Create a reference to the chats collection
+    const chatsRef = collection(db, "chats");
+    console.log({ chatsRef });
+    // Find users which have the currentUser uid since there might be multiple chats that belong to the currentUser uid
+    const q = query(
+      chatsRef,
+      // where("users", "array-contains", currentUser.uid)
+      where("users", "array-contains", currentUser.email)
+    );
+    console.log({ q });
+    // Get all chats that belong to the currentUser uid
+    const querySnapshot = await getDocs(q);
+    console.log("querySnapshot", querySnapshot);
+
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      setChats(
+        querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+      );
+    });
+    return unsubscribe;
+  }
+
+  useEffect(() => {
     fetchChats();
   }, []);
 
+  const checkIfClickedOutside = (e) => {
+    // If the user clicks outside of the input element, do something
+    if (inputAreaRef.current && !inputAreaRef.current.contains(e.target)) {
+      console.log("Clicked out of the search input");
+      setTimeout(() => {
+        setSearchFriends(false);
+      }, 3000);
+    } else {
+      setSearchFriends(true);
+    }
+  };
+
   useEffect(() => {
-    const checkIfClickedOutside = (e) => {
-      // If the user clicks outside of the input element, do something
-      if (inputAreaRef.current && !inputAreaRef.current.contains(e.target)) {
-        console.log("Clicked outside");
-        setTimeout(() => {
-          setSearchFriends(false);
-        }, 3000);
-      } else {
-        setSearchFriends(true);
-      }
-    };
     document.addEventListener("mousedown", checkIfClickedOutside);
     return () => {
       // Cleanup the event listener
       document.removeEventListener("mousedown", checkIfClickedOutside);
     };
   }, []);
+
+  // Search friends using search input
+  const fuse = new Fuse(friends, {
+    keys: ["displayName", "email"],
+  });
+  const friends_result = fuse.search(inputSearch);
+  // console.log(friends_result);
+
+  // Start a new chat by typing an email in the input field
+  const createChat = async (e) => {
+    const input = prompt(
+      "Please enter an email address of the user you want to chat with:"
+    );
+    if (!input) return null;
+
+    if (
+      EmailValidator.validate(input) &&
+      !chatAlreadyExists(input) &&
+      input !== currentUser.email
+    ) {
+      // We need to add chat data into the DB 'chats' collection if it doesn't exists and is valid
+      const docRef = await addDoc(collection(db, "chats"), {
+        // users: [currentUser.email, input],
+        users: [currentUser.email, input],
+      });
+      console.log("Document written with ID: ", docRef.id);
+    }
+  };
+
+  const chatAlreadyExists = (recipientEmail:User) => {
+    !!chats?.docs?.find(
+      (chat) =>
+        chat.data().users.find((user:User) => user === recipientEmail)?.length > 0
+    );
+  };
+
   return (
-    <div className="bg-white min-w-[320px] max-w-[450px] h-full">
+    <div className="bg-white min-w-[320px] max-w-[450px] h-full border-r overflow-y-scroll scrollContainer">
       <div className="flex sticky top-0 bg-white justify-between items-center p-4 h-[80px] border-b border-b-white w-full">
-        <Avatar
-          className="cursor-pointer hover:opacity:0.8"
-          src={currentUser.photoURL}
-        />
-        <div>
+        <div className="flex space-x-2 items-center">
+          <Avatar
+            className="cursor-pointer hover:opacity:0.8"
+            src={currentUser?.photoURL}
+          />
+          <span className="text-sm">
+            Logged in as:{" "}
+            <span className="text-gray-500 text-sm">{currentUser?.email}</span>
+          </span>
+        </div>
+
+        <div className="flex">
           <IconButton>
-            <DonutLarge />
-          </IconButton>
-          <IconButton>
-            <Chat />
+            <Chat onClick={createChat} />
           </IconButton>
           <BasicMenu />
         </div>
@@ -127,13 +196,16 @@ function Sidebar() {
           </div>
         </div>
       </div>
+      <button className="w-full border p-2" onClick={createChat}>
+        Star a new chat
+      </button>
       <div className="bg-[#f6f6f6] border-b border-b-black/10 p-5">
         <div className="flex p-[5px] rounded-md border-b border-b-[#ededed] bg-white">
           <Search />
           <input
             className="w-full outline-none border-none"
             ref={inputAreaRef}
-            placeholder="Search or start new chat"
+            placeholder="Search in chats"
             value={inputSearch}
             onChange={(e) => setInputSearch(e.target.value)}
           />
@@ -176,7 +248,7 @@ function Sidebar() {
         <>
           {/* Display chat items for the chats that belong to the currentUser */}
           {chats.map((chat) => (
-            <Chats key={chat.id} chat={chat} />
+            <Chats key={chat.id} chat={chat} users={chat.users} />
           ))}
         </>
       )}
