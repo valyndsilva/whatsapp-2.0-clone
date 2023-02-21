@@ -3,6 +3,9 @@ import Image from "next/image";
 import Link from "next/link";
 
 const NotFoundPage = () => {
+    const loaderProp = ({ src }) => {
+      return src;
+    };
   return (
     <>
       <div className="flex flex-col justify-center items-center w-[80vw] my-10 mx-auto">
@@ -14,6 +17,7 @@ const NotFoundPage = () => {
           height={250}
           width={250}
           className="object-contain"
+          loader={loaderProp}
         />
         <p className="text-md text-gray-500">
           Use the search box in the sidebar to search through your existing

@@ -12,10 +12,13 @@ import { BasicMenu, Chats } from ".";
 import {
   addDoc,
   collection,
+  doc,
   DocumentData,
   getDocs,
   onSnapshot,
   query,
+  serverTimestamp,
+  setDoc,
   where,
 } from "firebase/firestore";
 import { db } from "../firebaseConfig";
@@ -105,7 +108,7 @@ function Sidebar() {
     fetchChats();
   }, []);
 
-  const checkIfClickedOutside = (e) => {
+  const checkIfClickedOutside = (e: { target: any }) => {
     // If the user clicks outside of the input element, do something
     if (inputAreaRef.current && !inputAreaRef.current.contains(e.target)) {
       console.log("Clicked out of the search input");
@@ -133,7 +136,7 @@ function Sidebar() {
   // console.log(friends_result);
 
   // Start a new chat by typing an email in the input field
-  const createChat = async (e) => {
+  const createChat = async (e: any) => {
     const input = prompt(
       "Please enter an email address of the user you want to chat with:"
     );
@@ -146,16 +149,16 @@ function Sidebar() {
     ) {
       // We need to add chat data into the DB 'chats' collection if it doesn't exists and is valid
       const docRef = await addDoc(collection(db, "chats"), {
-        // users: [currentUser.email, input],
         users: [currentUser.email, input],
       });
+
       console.log("Document written with ID: ", docRef.id);
     }
   };
 
-  const chatAlreadyExists = (recipientEmail) => {
+  const chatAlreadyExists = (recipientEmail: string | User) => {
     return !!chats?.docs?.find(
-      (chat:DocumentData) =>
+      (chat: DocumentData) =>
         chat.data().users.find((user: User) => user === recipientEmail)
           ?.length > 0
     );

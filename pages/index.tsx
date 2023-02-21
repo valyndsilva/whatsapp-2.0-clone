@@ -1,7 +1,11 @@
 import Head from "next/head";
 import Image from "next/image";
+import whatsappImg from "../public/assets/whatsapp-home.png";
 
 export default function Home() {
+  const loaderProp = ({ src }) => {
+    return src;
+  };
   return (
     <div className="flex items-center justify-center bg-[#f8fafc] h-full w-full">
       <Head>
@@ -11,11 +15,12 @@ export default function Home() {
       </Head>
       <div className="flex flex-col w-1/2 items-center justify-center text-center">
         <Image
-          src="/assets/whatsapp-home.png"
+          src={whatsappImg}
           alt="Whatsapp Logo"
           height={250}
           width={250}
           className="object-contain"
+          loader={loaderProp}
         />
         <h2 className=" text-[#727372]">Keep your phone connected.</h2>
         <p className="text-[#b7b9bb]">
