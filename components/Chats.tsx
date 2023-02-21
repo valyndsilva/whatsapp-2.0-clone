@@ -3,9 +3,14 @@ import moment from "moment";
 import styled from "styled-components";
 import { Avatar } from "@mui/material";
 import { useRouter } from "next/router";
-import { SnippetFolderOutlined } from "@mui/icons-material";
-import getFriendData from "../utils/getFriendData";
-import { collection, DocumentData, getDocs, query, QuerySnapshot, where } from "firebase/firestore";
+import {
+  collection,
+  DocumentData,
+  getDocs,
+  query,
+  QuerySnapshot,
+  where,
+} from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import getRecipientEmail from "../utils/getRecipientEmail";
 import { useAuth } from "../context/AuthContext";
@@ -17,8 +22,8 @@ type Props = {
   users: any[];
 };
 function Chats({ chat, users }: Props) {
-  console.log({ chat });
-  console.log({ users });
+  // console.log({ chat });
+  // console.log({ users });
   const router = useRouter();
 
   const enterChat = () => {
@@ -27,21 +32,11 @@ function Chats({ chat, users }: Props) {
 
   const [friend, setFriend] = useState<FriendData>();
 
-  useEffect(() => {
-    if (chat.users.length > 0) {
-      getFriendData(chat.users).then((data: FriendData) => {
-        console.log("getFriendData:", data);
-        setFriend(data);
-        console.log(friend);
-      });
-    }
-  }, [chat.users]);
-
- const [recipientSnapshot, setRecipientSnapshot] =
-   useState<QuerySnapshot<DocumentData>>();
+  const [recipientSnapshot, setRecipientSnapshot] =
+    useState<QuerySnapshot<DocumentData>>();
   const { currentUser } = useAuth();
   const user = currentUser;
-  console.log({user});
+  // console.log({user});
   // Create a reference to the chats collection
   const recipientRef = collection(db, "users");
   // console.log({ recipientRef });
@@ -53,7 +48,6 @@ function Chats({ chat, users }: Props) {
   );
   // console.log({ recipientQuery });
 
-
   useEffect(() => {
     const getRecipientSnapshot = async () => {
       const queryRecipientSnapshot = await getDocs(recipientQuery);
@@ -61,11 +55,11 @@ function Chats({ chat, users }: Props) {
       setRecipientSnapshot(queryRecipientSnapshot);
     };
     getRecipientSnapshot();
-  }, []);
+  }, [recipientSnapshot]);
   const recipient = recipientSnapshot?.docs?.[0]?.data();
-  console.log({recipient});
-  const recipientEmail = getRecipientEmail(users, user);
-  // console.log({ recipientEmail });
+  // console.log({recipient});
+  // const recipientEmail = getRecipientEmail(users, user);
+  // // console.log({ recipientEmail });
 
   return (
     <div

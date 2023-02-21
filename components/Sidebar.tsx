@@ -36,17 +36,18 @@ function Sidebar() {
   const inputAreaRef = useRef(null);
   const [searchFriends, setSearchFriends] = useState(false);
   const [inputSearch, setInputSearch] = useState("");
-
+  // console.log({ friends });
+  // console.log({ chats });
   //Fetch friends list
   async function fetchFriends() {
     // Create a reference to the users collection
     const userRef = collection(db, "users");
-    console.log({ userRef });
+    // console.log({ userRef });
     // Find email which are not the currentUser email since we don't want to show the currentUser email in the friends list
     const q = query(userRef, where("email", "!=", currentUser?.email));
     // Get all the users that are not the currentUser email
     const querySnapshot = await getDocs(q);
-    console.log("querySnapshot", querySnapshot);
+    // console.log("querySnapshot", querySnapshot);
     setFriends(
       querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
     );
@@ -56,45 +57,21 @@ function Sidebar() {
     fetchFriends();
   }, []);
 
-  // //Fetch chats
-  // async function fetchChats() {
-  //   // Create a reference to the chats collection
-  //   const chatsRef = collection(db, "chats");
-  //   console.log({ chatsRef });
-  //   // Find users which have the currentUser uid since there might be multiple chats that belong to the currentUser uid
-  //   const userChatQuery = query(
-  //     chatsRef,
-  //     // where("users", "array-contains", currentUser.uid)
-  //     where("users", "array-contains", currentUser.uid)
-  //   );
-  //   console.log({ userChatQuery });
-  //   // Get all chats that belong to the currentUser uid
-  //   const querySnapshot = await getDocs(userChatQuery);
-  //   console.log("querySnapshot", querySnapshot);
-
-  //   const unsubscribe = onSnapshot(userChatQuery, (querySnapshot) => {
-  //     setChats(
-  //       querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
-  //     );
-  //   });
-  //   return unsubscribe;
-  // }
-
   //Fetch chats
   async function fetchChats() {
     // Create a reference to the chats collection
     const chatsRef = collection(db, "chats");
-    console.log({ chatsRef });
+    // console.log({ chatsRef });
     // Find users which have the currentUser uid since there might be multiple chats that belong to the currentUser uid
     const q = query(
       chatsRef,
       // where("users", "array-contains", currentUser.uid)
       where("users", "array-contains", currentUser.email)
     );
-    console.log({ q });
+    // console.log({ q });
     // Get all chats that belong to the currentUser uid
     const querySnapshot = await getDocs(q);
-    console.log("querySnapshot", querySnapshot);
+    // console.log("querySnapshot", querySnapshot);
 
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       setChats(
@@ -142,26 +119,37 @@ function Sidebar() {
     );
     if (!input) return null;
 
+    const chatExists = (recipientEmail: string | User) => {
+      console.log(
+        chats?.find(
+          (chat: DocumentData) =>
+            chat.users.find((user: User) => user === recipientEmail)?.length > 0
+        )
+      );
+      return !!chats?.find(
+        (chat: DocumentData) =>
+          chat.users.find((user: User) => user === recipientEmail)?.length > 0
+      );
+    };
+
+    console.log("Chat exists?:", chatExists(input));
+    alert(
+      chatExists(input)
+        ? "Recipient user already exists in db"
+        : "Recipient user does not exist in db. Creating a new chat. If a recipient user is created with the same email, you will be able to chat with them."
+    );
+
     if (
+      !chatExists(input) &&
       EmailValidator.validate(input) &&
-      !chatAlreadyExists(input) &&
       input !== currentUser.email
     ) {
       // We need to add chat data into the DB 'chats' collection if it doesn't exists and is valid
       const docRef = await addDoc(collection(db, "chats"), {
         users: [currentUser.email, input],
       });
-
-      console.log("Document written with ID: ", docRef.id);
+      console.log("docRef Document written with ID: ", docRef.id);
     }
-  };
-
-  const chatAlreadyExists = (recipientEmail: string | User) => {
-    return !!chats?.docs?.find(
-      (chat: DocumentData) =>
-        chat.data().users.find((user: User) => user === recipientEmail)
-          ?.length > 0
-    );
   };
 
   return (
@@ -179,8 +167,8 @@ function Sidebar() {
         </div>
 
         <div className="flex">
-          <IconButton>
-            <Chat onClick={createChat} />
+          <IconButton onClick={createChat}>
+            <Chat />
           </IconButton>
           <BasicMenu />
         </div>

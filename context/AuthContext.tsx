@@ -32,8 +32,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         return;
       }
 
-      const token = await user.getIdToken();
-      console.log(user);
+      // const token = await user.getIdToken();
+      // console.log(user);
       // console.log("User Logged In!", user, token);
       console.log("User Logged In!");
       const userData = {

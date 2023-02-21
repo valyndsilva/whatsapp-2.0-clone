@@ -52,22 +52,6 @@ function ChatContent({ chat, chat_id, messagesProps }) {
     setMessages(messagesParse);
   }, []);
 
-  // Fetch Friend Data
-  useEffect(() => {
-    if (chatParse.users?.length > 0) {
-      console.log("Chat has users: has chatParse");
-      console.log("chatParse.users", chatParse.users);
-      getFriendData(chatParse.users).then((data: FriendData) => {
-        console.log("getFriendData:", data);
-
-        setFriend(data);
-        console.log(friend);
-      });
-    } else {
-      console.log("No chat users: No chatParse");
-    }
-  }, [chat_id]);
-
   // Send Message Functionality
   const sendMessage = async (e) => {
     e.preventDefault();
@@ -130,9 +114,9 @@ function ChatContent({ chat, chat_id, messagesProps }) {
       setRecipientSnapshot(queryRecipientSnapshot);
     };
     getRecipientSnapshot();
-  }, []);
+  }, [recipientSnapshot]);
   const recipient = recipientSnapshot?.docs?.[0]?.data();
-  console.log({ recipient });
+  // console.log({ recipient });
   const recipientPhotoURL = recipientSnapshot?.docs?.[0]?.data()?.photoURL;
   // console.log(recipient);
   const recipientEmail = getRecipientEmail(users, user);
