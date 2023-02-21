@@ -12,6 +12,7 @@ import { BasicMenu, Chats } from ".";
 import {
   addDoc,
   collection,
+  DocumentData,
   getDocs,
   onSnapshot,
   query,
@@ -28,7 +29,7 @@ function Sidebar() {
   const { currentUser } = useAuth();
   // console.log(currentUser);
   const [friends, setFriends] = useState([]);
-  const [chats, setChats] = useState<any[]>([]);
+  const [chats, setChats] = useState([]);
   const inputAreaRef = useRef(null);
   const [searchFriends, setSearchFriends] = useState(false);
   const [inputSearch, setInputSearch] = useState("");
@@ -152,10 +153,11 @@ function Sidebar() {
     }
   };
 
-  const chatAlreadyExists = (recipientEmail:User) => {
-    !!chats?.docs?.find(
-      (chat) =>
-        chat.data().users.find((user:User) => user === recipientEmail)?.length > 0
+  const chatAlreadyExists = (recipientEmail) => {
+    return !!chats?.docs?.find(
+      (chat:DocumentData) =>
+        chat.data().users.find((user: User) => user === recipientEmail)
+          ?.length > 0
     );
   };
 

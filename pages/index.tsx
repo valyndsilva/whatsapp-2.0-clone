@@ -10,7 +10,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="flex flex-col w-1/2 items-center justify-center text-center">
-        <img
+        <Image
           src="/assets/whatsapp-home.png"
           alt="Whatsapp Logo"
           height={250}

@@ -1,4 +1,5 @@
 // pages/404.js
+import Image from "next/image";
 import Link from "next/link";
 
 const NotFoundPage = () => {
@@ -7,7 +8,7 @@ const NotFoundPage = () => {
       <div className="flex flex-col justify-center items-center w-[80vw] my-10 mx-auto">
         <h2 className="text-4xl my-4">Chat Not Found</h2>
         <p className="text-lg">Oops... There is nothing to see here!</p>
-        <img
+        <Image
           src="/assets/whatsapp-home.png"
           alt="Whatsapp Logo"
           height={250}

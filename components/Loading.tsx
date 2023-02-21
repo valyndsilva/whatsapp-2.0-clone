@@ -1,6 +1,7 @@
 import React from "react";
 import { Grid } from "@mui/material";
 import ReactLoading from "react-loading";
+import Image from "next/image";
 function Loading({ type, color }) {
   return (
     <Grid
@@ -11,7 +12,7 @@ function Loading({ type, color }) {
       justifyContent="center"
       style={{ minHeight: "100vh", backgroundColor: "whitesmoke" }}
     >
-      <img
+      <Image
         src="/assets/whatsapp-home.png"
         alt="Whatsapp Logo"
         height={250}

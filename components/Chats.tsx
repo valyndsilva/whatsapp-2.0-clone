@@ -5,7 +5,7 @@ import { Avatar } from "@mui/material";
 import { useRouter } from "next/router";
 import { SnippetFolderOutlined } from "@mui/icons-material";
 import getFriendData from "../utils/getFriendData";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, DocumentData, getDocs, query, QuerySnapshot, where } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import getRecipientEmail from "../utils/getRecipientEmail";
 import { useAuth } from "../context/AuthContext";
@@ -37,7 +37,8 @@ function Chats({ chat, users }: Props) {
     }
   }, [chat.users]);
 
-  const [recipientSnapshot, setRecipientSnapshot] = useState([]);
+ const [recipientSnapshot, setRecipientSnapshot] =
+   useState<QuerySnapshot<DocumentData>>();
   const { currentUser } = useAuth();
   const user = currentUser;
   console.log({user});

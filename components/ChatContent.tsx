@@ -14,10 +14,13 @@ import {
   addDoc,
   collection,
   doc,
+  DocumentData,
   getDocs,
   onSnapshot,
   orderBy,
   query,
+  QueryDocumentSnapshot,
+  QuerySnapshot,
   serverTimestamp,
   setDoc,
   where,
@@ -105,9 +108,10 @@ function ChatContent({ chat, chat_id, messagesProps }) {
     });
   }, [chat_id]);
 
-  const [recipientSnapshot, setRecipientSnapshot] = useState([]);
+  const [recipientSnapshot, setRecipientSnapshot] =
+    useState<QuerySnapshot<DocumentData>>();
   const user = currentUser;
-  const users= chatParse.users;
+  const users = chatParse.users;
   // Create a reference to the chats collection
   const recipientRef = collection(db, "users");
   // console.log({ recipientRef });
